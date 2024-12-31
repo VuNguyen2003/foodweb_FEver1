@@ -1,10 +1,14 @@
+// src/components/ProductList.js
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import productService from '../services/productService';
+import '../styles/product.css';
 
 const ProductList = () => {
-  const [products, setProducts] = useState([]); // Khởi tạo với mảng rỗng
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -30,13 +34,16 @@ const ProductList = () => {
   }
 
   return (
-    <div>
+    <div className="product-list">
       {products.map((product) => (
-        <div key={product.productId}>
-          <h2>{product.productName}</h2>
-          <p>{product.productDescription}</p>
-          <p>Giá: {product.price} VND</p>
-          {/* Hiển thị thêm thông tin sản phẩm nếu cần */}
+        <div
+          className="product-item"
+          key={product.productId}
+          onClick={() => navigate(`/products/${product.productId}`)}
+        >
+          <h2 className="product-title">{product.productName}</h2>
+          <p className="product-description">{product.productDescription}</p>
+          <p className="product-price">Giá: {product.price} VND</p>
         </div>
       ))}
     </div>
