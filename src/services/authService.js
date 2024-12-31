@@ -1,3 +1,4 @@
+// src/services/authService.js
 const API_URL = 'http://localhost:8081/api/v1/account';
 
 const register = async (user) => {
@@ -33,7 +34,7 @@ const login = async (user) => {
 
 const logout = () => {
   localStorage.removeItem('user');
-  window.location.href = '/login'; // Redirect to login page after logout
+  window.location.href = '/'; // Redirect to home page after logout
 };
 
 const getCurrentUser = () => {
@@ -41,11 +42,17 @@ const getCurrentUser = () => {
   return user ? JSON.parse(user) : null;
 };
 
+const isAdmin = () => {
+  const user = getCurrentUser();
+  return user?.roles?.includes('ADMIN'); // Assuming roles are stored in user object
+};
+
 const authService = {
   register,
   login,
   logout,
   getCurrentUser,
+  isAdmin,
 };
 
 export default authService;
