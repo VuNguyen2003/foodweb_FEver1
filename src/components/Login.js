@@ -1,18 +1,22 @@
 // src/components/Login.js
 import React, { useState } from 'react';
 import authService from '../services/authService';
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       await authService.login({ username, password });
       alert('Login successful');
+      navigate('/'); // Redirect to home page after successful login
+      window.location.reload(); // Reload to update Navbar
     } catch (error) {
-      alert('Login failed');
+      alert(error.message || 'Login failed');
     }
   };
 
