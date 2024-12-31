@@ -1,4 +1,3 @@
-// src/services/authService.js
 const API_URL = 'http://localhost:8081/api/v1/account';
 
 const register = async (user) => {
@@ -10,7 +9,8 @@ const register = async (user) => {
     body: JSON.stringify(user),
   });
   if (!response.ok) {
-    throw new Error('Registration failed');
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Registration failed');
   }
 };
 
@@ -24,20 +24,28 @@ const login = async (user) => {
   });
   if (response.ok) {
     const data = await response.json();
-    localStorage.setItem('user', JSON.stringify(data));
+    localStorage.setItem('user', JSON.stringify({ ...data, username: user.username }));
   } else {
-    throw new Error('Login failed');
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Login failed');
   }
 };
 
 const logout = () => {
   localStorage.removeItem('user');
+  window.location.href = '/login'; // Redirect to login page after logout
+};
+
+const getCurrentUser = () => {
+  const user = localStorage.getItem('user');
+  return user ? JSON.parse(user) : null;
 };
 
 const authService = {
   register,
   login,
   logout,
+  getCurrentUser,
 };
 
 export default authService;
