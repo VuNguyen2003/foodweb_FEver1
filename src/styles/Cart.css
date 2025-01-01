@@ -55,10 +55,8 @@
     background-color: #ff1c38;
   }
   
-  .cart-total {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #28a745;
-    text-align: right;
-    margin-top: 20px;
+  .error-message {
+    color: red;
+    font-size: 1.1rem;
+    text-align: center;
   }

@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import productService from '../services/productService';
 import '../styles/ProductView.css';
 
-const ProductView = () => {
+const ProductView = ({ onAddToCart }) => {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -41,6 +41,12 @@ const ProductView = () => {
         <h1 className="product-title">{product.name}</h1>
         <p className="product-description">{product.description}</p>
         <p className="product-price">Giá: {product.price} VND</p>
+        <button 
+          className="add-to-cart-button" 
+          onClick={() => onAddToCart(product)}
+        >
+          Thêm vào giỏ hàng
+        </button>
       </div>
     </div>
   );
