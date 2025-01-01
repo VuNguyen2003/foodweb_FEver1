@@ -47,12 +47,20 @@ const isAdmin = () => {
   return user?.roles?.includes('ADMIN'); // Assuming roles are stored in user object
 };
 
+const getProfile = async (username) => {
+  const response = await fetch(`${API_URL}/${username}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch profile');
+  }
+  return await response.json();
+};
 const authService = {
   register,
   login,
   logout,
   getCurrentUser,
   isAdmin,
+  getProfile,
 };
 
 export default authService;

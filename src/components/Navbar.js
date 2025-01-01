@@ -1,12 +1,10 @@
-// src/components/Navbar.js
 import React from 'react';
 import { Link } from 'react-router-dom';
 import authService from '../services/authService';
-import '../styles/Navbar.css'; // Assuming custom styles are added in this file
+import '../styles/Navbar.css';
 
 const Navbar = () => {
   const currentUser = authService.getCurrentUser();
-  const isAdmin = authService.isAdmin();
 
   return (
     <nav className="navbar">
@@ -20,12 +18,11 @@ const Navbar = () => {
         )}
         {currentUser && (
           <>
-            {isAdmin && <li><Link to="/add-product">Add Product</Link></li>}
-            {!isAdmin && <li><Link to="/cart">Cart</Link></li>}
             <li><Link to="/profile">Profile</Link></li>
             <li><button onClick={() => { authService.logout(); window.location.reload(); }}>Logout</button></li>
           </>
         )}
+        <li><Link to="/cart">Cart</Link></li>
       </ul>
     </nav>
   );
