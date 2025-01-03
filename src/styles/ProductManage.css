@@ -1,0 +1,82 @@
+/* src/styles/ProductManage.css */
+
+/* Container chính */
+.product-manage-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  /* Thẻ card bao quanh form */
+  .card {
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 16px;
+    margin-bottom: 20px;
+  }
+  
+  /* Tiêu đề */
+  .card h3 {
+    margin-top: 0;
+  }
+  
+  /* Group input */
+  .form-group {
+    margin-bottom: 12px;
+  }
+  
+  .form-group label {
+    display: inline-block;
+    width: 100px;
+    font-weight: bold;
+    margin-right: 8px;
+  }
+  
+  .form-group input {
+    padding: 6px;
+    width: 200px;
+  }
+  
+  /* Nút */
+  button {
+    margin-right: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+  
+  /* Danh sách sản phẩm */
+  .product-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+  }
+  
+  .product-info {
+    flex: 1;
+  }
+  
+  .product-actions button {
+    margin-left: 8px;
+  }
+  
+  /* Hình ảnh sản phẩm */
+  .product-image {
+    width: 80px;
+    height: auto;
+    display: block;
+    margin-top: 5px;
+  }
+  
+  .edit-card {
+    background-color: #fff8e1; /* màu nhạt để nổi bật block edit */
+  }
+  
+  .old-image-section {
+    margin: 10px 0;
+  }
+  

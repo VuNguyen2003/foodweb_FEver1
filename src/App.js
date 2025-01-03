@@ -9,6 +9,7 @@ import Profile from './components/Profile';
 import Cart from './components/Cart';
 import './styles/App.css';
 import CategoryManagement from './components/CategoryManagement';
+import ProductManage from './components/ProductManage';
 
 const App = () => {
   const [cartItems, setCartItems] = useState([]);
@@ -26,6 +27,7 @@ const App = () => {
       <Navbar />
       <Routes>
         <Route path="/" element={<ProductList onAddToCart={handleAddToCart} />} />
+        <Route path="/product-manage" element={<ProductManage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
