@@ -1,4 +1,3 @@
-// src/components/ProductManage.jsx
 import React, { useEffect, useState } from 'react';
 import productService from '../services/productService';
 import '../styles/ProductManage.css'; // Import CSS riêng cho component
@@ -7,11 +6,12 @@ const ProductManage = () => {
   const [products, setProducts] = useState([]);
 
   // State cho form thêm mới
+  // Đổi "ProductDescription" thành "productDescription" và "Image" thành "image"
   const [newProduct, setNewProduct] = useState({
     productName: '',
     price: '',
-    ProductDescription: '',
-    productImageUrl: null,
+    productDescription: '',
+    image: null,
   });
 
   // State cho form edit
@@ -37,17 +37,31 @@ const ProductManage = () => {
     e.preventDefault();
     try {
       const formData = new FormData();
+      // Gói JSON cho các trường text
       const productData = {
         productName: newProduct.productName,
         price: newProduct.price,
         productDescription: newProduct.productDescription,
       };
-      formData.append('product', new Blob([JSON.stringify(productData)], { type: 'application/json' }));
-      formData.append('productImageUrl', newProduct.image);
-  
+      // Append JSON vào form với key "product"
+      formData.append(
+        'product',
+        new Blob([JSON.stringify(productData)], { type: 'application/json' })
+      );
+      // Append file ảnh với key "image" (PHẢI trùng với @RequestPart("image"))
+      formData.append('image', newProduct.image);
+
       await productService.createProduct(formData);
       alert('Product created successfully!');
-      // Reset form và tải lại danh sách sản phẩm
+
+      // Sau khi tạo, reset form và tải lại danh sách
+      setNewProduct({
+        productName: '',
+        price: '',
+        productDescription: '',
+        image: null,
+      });
+      loadProducts();
     } catch (error) {
       console.error(error);
       alert('Failed to create product');
@@ -69,6 +83,8 @@ const ProductManage = () => {
 
   // Click "Edit" => set editProduct
   const handleEditClick = (product) => {
+    // Sao chép object product sang state editProduct
+    // Trong DB, cột image lưu ở productImageUrl => ta copy sang field productImageUrl
     setEditProduct({ ...product });
   };
 
@@ -81,7 +97,7 @@ const ProductManage = () => {
   const handleUpdateProduct = async (e) => {
     e.preventDefault();
     if (!editProduct) return;
-  
+
     try {
       const formData = new FormData();
       const productData = {
@@ -89,12 +105,16 @@ const ProductManage = () => {
         price: editProduct.price,
         productDescription: editProduct.productDescription,
       };
-      formData.append('product', new Blob([JSON.stringify(productData)], { type: 'application/json' }));
-  
+      formData.append(
+        'product',
+        new Blob([JSON.stringify(productData)], { type: 'application/json' })
+      );
+
+      // Nếu chọn ảnh mới, append với key "image"
       if (editProduct.newImageFile) {
-        formData.append('productImageUrl', editProduct.newImageFile);
+        formData.append('image', editProduct.newImageFile);
       }
-  
+
       await productService.updateProductWithImage(editProduct.productId, formData);
       alert('Product updated successfully!');
       setEditProduct(null);
@@ -142,9 +162,12 @@ const ProductManage = () => {
             <label>Description:</label>
             <input
               type="text"
-              value={newProduct.description}
+              value={newProduct.productDescription}
               onChange={(e) =>
-                setNewProduct({ ...newProduct, description: e.target.value })
+                setNewProduct({
+                  ...newProduct,
+                  productDescription: e.target.value,
+                })
               }
             />
           </div>
@@ -174,18 +197,20 @@ const ProductManage = () => {
             <p>
               <strong>{product.productName}</strong> - {product.price} VND
             </p>
-            <p>{product.description}</p>
-            {/* Nếu backend trả về imageUrl (VD: product.imageUrl), hiển thị ảnh */}
-            {product.imageUrl && (
+            <p>{product.productDescription}</p>
+            {/* Sửa thành product.productImageUrl để khớp với entity ở server */}
+            {product.productImageUrl && (
               <img
-                src={product.imageUrl}
+                src={product.productImageUrl}
                 alt="product"
                 className="product-image"
               />
             )}
           </div>
           <div className="product-actions">
-            <button onClick={() => handleDeleteProduct(product.productId)}>Delete</button>
+            <button onClick={() => handleDeleteProduct(product.productId)}>
+              Delete
+            </button>
             <button onClick={() => handleEditClick(product)}>Edit</button>
           </div>
         </div>
@@ -222,21 +247,25 @@ const ProductManage = () => {
 
             <div className="form-group">
               <label>Description:</label>
+              {/* Đổi editProduct.description -> editProduct.productDescription */}
               <input
                 type="text"
-                value={editProduct.description}
+                value={editProduct.productDescription || ''}
                 onChange={(e) =>
-                  setEditProduct({ ...editProduct, description: e.target.value })
+                  setEditProduct({
+                    ...editProduct,
+                    productDescription: e.target.value,
+                  })
                 }
               />
             </div>
 
             {/* Ảnh cũ, nếu có */}
-            {editProduct.imageUrl && (
+            {editProduct.productImageUrl && (
               <div className="old-image-section">
                 <p>Current Image:</p>
                 <img
-                  src={editProduct.imageUrl}
+                  src={editProduct.productImageUrl}
                   alt="current product"
                   className="product-image"
                 />

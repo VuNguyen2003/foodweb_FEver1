@@ -1,3 +1,4 @@
+// src/App.js
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
@@ -12,28 +13,49 @@ import CategoryManagement from './components/CategoryManagement';
 import ProductManage from './components/ProductManage';
 
 const App = () => {
+  // Quản lý giỏ hàng tại App.js
   const [cartItems, setCartItems] = useState([]);
 
-  const handleAddToCart = (product) => {
-    setCartItems((prevItems) => [...prevItems, product]);
+  // Hàm thêm sản phẩm vào giỏ hàng
+  const addToCart = (product) => {
+    setCartItems((prevItems) => {
+      const existingItem = prevItems.find(item => item.productId === product.productId);
+      if (existingItem) {
+        // Tăng số lượng nếu sản phẩm đã tồn tại trong giỏ
+        return prevItems.map(item =>
+          item.productId === product.productId
+            ? { ...item, quantity: item.quantity + 1, total: (item.quantity + 1) * item.price }
+            : item
+        );
+      } else {
+        // Thêm sản phẩm mới vào giỏ
+        return [...prevItems, { ...product, quantity: 1, total: product.price }];
+      }
+    });
   };
 
-  const handleRemoveFromCart = (index) => {
-    setCartItems((prevItems) => prevItems.filter((_, i) => i !== index));
+  // Hàm loại bỏ sản phẩm khỏi giỏ hàng
+  const removeFromCart = (productId) => {
+    setCartItems((prevItems) => prevItems.filter(item => item.productId !== productId));
+  };
+
+  // Hàm xóa toàn bộ giỏ hàng
+  const clearCart = () => {
+    setCartItems([]);
   };
 
   return (
     <Router>
-      <Navbar />
+      <Navbar cartItemCount={cartItems.length} /> {/* Hiển thị số lượng sản phẩm trong giỏ */}
       <Routes>
-        <Route path="/" element={<ProductList onAddToCart={handleAddToCart} />} />
+        <Route path="/" element={<ProductList addToCart={addToCart} />} />
         <Route path="/product-manage" element={<ProductManage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/categories" element={<CategoryManagement />} />
-        <Route path="/products/:productId" element={<ProductView onAddToCart={handleAddToCart} />} />
-        <Route path="/cart" element={<Cart cartItems={cartItems} onRemoveFromCart={handleRemoveFromCart} />} />
+        <Route path="/products/:productId" element={<ProductView addToCart={addToCart} />} />
+        <Route path="/cart" element={<Cart cartItems={cartItems} removeFromCart={removeFromCart} clearCart={clearCart} />} />
       </Routes>
     </Router>
   );

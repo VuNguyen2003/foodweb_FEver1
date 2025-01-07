@@ -1,51 +1,55 @@
-import React, { useEffect, useState } from 'react';
-import cartItemService from '../services/cartItemService';
+// src/components/Cart.js
+import React, { useState } from 'react';
 import '../styles/Cart.css';
 
-const Cart = () => {
-  const [cartItems, setCartItems] = useState([]);
-  const [error, setError] = useState(null);
+const Cart = ({ cartItems, removeFromCart, clearCart }) => {
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
-  useEffect(() => {
-    const fetchCartItems = async () => {
-      try {
-        const items = await cartItemService.getAllCartItems();
-        setCartItems(items);
-      } catch (err) {
-        setError('Failed to fetch cart items');
-      }
+  const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      setError("Giỏ hàng trống!");
+      return;
+    }
+
+    // Tạo hóa đơn (invoice)
+    const invoice = {
+      orderId: Date.now(),
+      items: cartItems,
+      total: cartItems.reduce((acc, item) => acc + item.total, 0),
+      date: new Date().toLocaleString(),
     };
 
-    fetchCartItems();
-  }, []);
+    // Giả sử bạn muốn hiển thị hóa đơn đơn giản dưới dạng JSON
+    alert(`Hóa Đơn:\n${JSON.stringify(invoice, null, 2)}`);
 
-  const handleRemoveItem = async (id) => {
-    try {
-      await cartItemService.removeCartItem(id);
-      setCartItems(cartItems.filter((item) => item.id !== id));
-    } catch (err) {
-      setError('Failed to remove item');
-    }
+    // Xóa giỏ hàng sau khi thanh toán
+    clearCart();
+    setMessage("Thanh toán thành công! Hóa đơn đã được tạo.");
+    setError("");
   };
-
-  if (error) {
-    return <p className="error-message">{error}</p>;
-  }
 
   return (
     <div className="cart-container">
-      <h2 className="cart-header">Shopping Cart</h2>
-      <ul className="cart-list">
-        {cartItems.map((item) => (
-          <li key={item.id} className="cart-item">
-            <span>{item.name} - {item.price} VND</span>
-            <button className="remove-button" onClick={() => handleRemoveItem(item.id)}>
-              Remove
-            </button>
-          </li>
-        ))}
-      </ul>
-      {cartItems.length === 0 && <p className="empty-cart-message">Your cart is empty.</p>}
+      <h2>Giỏ Hàng</h2>
+      {message && <p className="success-message">{message}</p>}
+      {error && <p className="error-message">{error}</p>}
+      {cartItems.length === 0 ? (
+        <p>Giỏ hàng của bạn đang trống.</p>
+      ) : (
+        <div>
+          <ul className="cart-list">
+            {cartItems.map(item => (
+              <li key={item.productId} className="cart-item">
+                <span>{item.productName} - {item.price} VND x {item.quantity} = {item.total} VND</span>
+                <button onClick={() => removeFromCart(item.productId)}>Xóa</button>
+              </li>
+            ))}
+          </ul>
+          <h3>Tổng Cộng: {cartItems.reduce((acc, item) => acc + item.total, 0)} VND</h3>
+          <button onClick={handleCheckout}>Thanh Toán</button>
+        </div>
+      )}
     </div>
   );
 };

@@ -1,13 +1,13 @@
+// src/components/ProductView.js
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import productService from '../services/productService';
-import cartItemService from '../services/cartItemService';
 import '../styles/ProductView.css';
 
-const ProductView = ({ cartId }) => {
+const ProductView = ({ addToCart }) => {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);  
   const [error, setError] = useState(null);
   const [message, setMessage] = useState("");
 
@@ -16,7 +16,7 @@ const ProductView = ({ cartId }) => {
       try {
         const data = await productService.getProductById(productId);
         setProduct(data);
-      } catch (error) {
+      } catch (err) {
         setError('Lỗi khi tải chi tiết sản phẩm');
       } finally {
         setLoading(false);
@@ -26,45 +26,25 @@ const ProductView = ({ cartId }) => {
     fetchProduct();
   }, [productId]);
 
-  const handleAddToCart = async () => {
-    try {
-      const cartItem = {
-        productId: product.productId,
-        cartId: cartId,
-        quantityItem: 1,
-        totalItem: product.price,
-      };
-      await cartItemService.addCartItem(cartItem);
+  const handleAddToCart = () => {
+    if (product) {
+      addToCart(product);
       setMessage("Sản phẩm đã được thêm vào giỏ hàng!");
-    } catch (err) {
-      setMessage("Không thể thêm sản phẩm vào giỏ hàng!");
     }
   };
 
-  if (loading) {
-    return <p>Đang tải sản phẩm...</p>;
-  }
-
-  if (error) {
-    return <p>{error}</p>;
-  }
+  if (loading) return <p>Đang tải sản phẩm...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
-    <div className="product-view-container">
-      <div className="product-view-image">
-        <img src={product.productImageUrl} alt={product.productName} />
-      </div>
+    <div className="product-view">
+      <img src={product.productImageUrl} alt={product.productName} className="product-view-image" />
       <div className="product-view-details">
-        <h1 className="product-title">{product.productName}</h1>
-        <p className="product-description">{product.productDescription}</p>
-        <p className="product-price">Giá: {product.price} VND</p>
-        <button
-          className="add-to-cart-button"
-          onClick={handleAddToCart}
-        >
-          Thêm vào giỏ hàng
-        </button>
-        {message && <p>{message}</p>}
+        <h1>{product.productName}</h1>
+        <p>{product.productDescription}</p>
+        <p>Giá: {product.price} VND</p>
+        <button onClick={handleAddToCart}>Thêm vào giỏ hàng</button>
+        {message && <p className="success-message">{message}</p>}
       </div>
     </div>
   );
