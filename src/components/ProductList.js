@@ -1,22 +1,21 @@
 // src/components/ProductList.js
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import productService from '../services/productService';
-import '../styles/product.css';
+import { Link } from 'react-router-dom';
+import '../styles/ProductList.css';
 
-const ProductList = () => {
+const ProductList = ({ addToCart }) => {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);  
   const [error, setError] = useState(null);
-  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const data = await productService.getAllProducts();
         setProducts(data);
-      } catch (error) {
-        setError('Lỗi khi tải sản phẩm');
+      } catch (err) {
+        setError('Lỗi khi tải danh sách sản phẩm');
       } finally {
         setLoading(false);
       }
@@ -25,25 +24,23 @@ const ProductList = () => {
     fetchProducts();
   }, []);
 
-  if (loading) {
-    return <p>Đang tải sản phẩm...</p>;
-  }
+  const handleAddToCart = (product) => {
+    addToCart(product);
+  };
 
-  if (error) {
-    return <p>{error}</p>;
-  }
+  if (loading) return <p>Đang tải sản phẩm...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div className="product-list">
-      {products.map((product) => (
-        <div
-          className="product-item"
-          key={product.productId}
-          onClick={() => navigate(`/products/${product.productId}`)}
-        >
-          <h2 className="product-title">{product.productName}</h2>
-          <p className="product-description">{product.productDescription}</p>
-          <p className="product-price">Giá: {product.price} VND</p>
+      {products.map(product => (
+        <div key={product.productId} className="product-card">
+          <Link to={`/products/${product.productId}`}>
+            <img src={product.productImageUrl} alt={product.productName} className="product-image" />
+          </Link>
+          <h3>{product.productName}</h3>
+          <p>Giá: {product.price} VND</p>
+          <button onClick={() => handleAddToCart(product)}>Thêm vào giỏ hàng</button>
         </div>
       ))}
     </div>

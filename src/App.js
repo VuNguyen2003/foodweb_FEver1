@@ -1,5 +1,5 @@
 // src/App.js
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Register from './components/Register';
@@ -14,7 +14,15 @@ import ProductManage from './components/ProductManage';
 
 const App = () => {
   // Quản lý giỏ hàng tại App.js
-  const [cartItems, setCartItems] = useState([]);
+  const [cartItems, setCartItems] = useState(() => {
+    const storedCart = localStorage.getItem('cart');
+    return storedCart ? JSON.parse(storedCart) : [];
+  });
+
+  // Cập nhật localStorage mỗi khi cartItems thay đổi
+  useEffect(() => {
+    localStorage.setItem('cart', JSON.stringify(cartItems));
+  }, [cartItems]);
 
   // Hàm thêm sản phẩm vào giỏ hàng
   const addToCart = (product) => {
@@ -44,6 +52,21 @@ const App = () => {
     setCartItems([]);
   };
 
+  // Hàm cập nhật số lượng sản phẩm trong giỏ hàng
+  const updateQuantity = (productId, quantity) => {
+    setCartItems((prevItems) => {
+      if (quantity < 1) {
+        // Nếu số lượng nhỏ hơn 1, loại bỏ sản phẩm khỏi giỏ hàng
+        return prevItems.filter(item => item.productId !== productId);
+      }
+      return prevItems.map(item =>
+        item.productId === productId
+          ? { ...item, quantity: quantity, total: item.price * quantity }
+          : item
+      );
+    });
+  };
+
   return (
     <Router>
       <Navbar cartItemCount={cartItems.length} /> {/* Hiển thị số lượng sản phẩm trong giỏ */}
@@ -55,7 +78,14 @@ const App = () => {
         <Route path="/profile" element={<Profile />} />
         <Route path="/categories" element={<CategoryManagement />} />
         <Route path="/products/:productId" element={<ProductView addToCart={addToCart} />} />
-        <Route path="/cart" element={<Cart cartItems={cartItems} removeFromCart={removeFromCart} clearCart={clearCart} />} />
+        <Route path="/cart" element={
+          <Cart 
+            cartItems={cartItems} 
+            removeFromCart={removeFromCart} 
+            clearCart={clearCart} 
+            updateQuantity={updateQuantity} 
+          />} 
+        />
       </Routes>
     </Router>
   );

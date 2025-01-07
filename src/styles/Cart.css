@@ -1,62 +1,141 @@
-/* Cart.css */
+/* src/styles/Cart.css */
 
 .cart-container {
-    max-width: 800px;
-    margin: 50px auto;
-    padding: 20px;
-    background: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .cart-header {
-    font-size: 2rem;
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  .cart-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .cart-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: white;
-    margin-bottom: 10px;
-    padding: 10px 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s;
-  }
-  
-  .cart-list li:hover {
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
-  }
-  
-  .cart-list button {
-    background-color: #ff4b5c;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 0.9rem;
-    transition: background-color 0.3s;
-  }
-  
-  .cart-list button:hover {
-    background-color: #ff1c38;
-  }
-  
-  .error-message {
-    color: red;
-    font-size: 1.1rem;
-    text-align: center;
-  }
+  padding: 20px;
+}
+
+.cart-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #ddd;
+  padding: 10px 0;
+}
+
+.item-details {
+  flex: 2;
+}
+
+.item-name {
+  font-weight: bold;
+  display: block;
+}
+
+.item-price, .item-total {
+  color: #555;
+}
+
+.quantity-controls {
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.quantity-controls button {
+  width: 30px;
+  height: 30px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.quantity-controls button:hover {
+  background-color: #e0e0e0;
+}
+
+.quantity-controls input {
+  width: 50px;
+  text-align: center;
+  margin: 0 5px;
+  padding: 5px;
+  border: 1px solid #ccc;
+}
+
+.remove-button {
+  background-color: #ff4d4d;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.remove-button:hover {
+  background-color: #ff1a1a;
+}
+
+.checkout-button {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.checkout-button:hover {
+  background-color: #45a049;
+}
+
+.success-message {
+  color: green;
+}
+
+.error-message {
+  color: red;
+}
+
+/* Modal styles */
+.payment-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.payment-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 300px;
+}
+
+.payment-buttons {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.payment-buttons button {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.payment-buttons button:first-child {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+}
+
+.payment-buttons button:first-child:hover {
+  background-color: #45a049;
+}
+
+.payment-buttons button:last-child {
+  background-color: #f44336;
+  color: white;
+  border: none;
+}
+
+.payment-buttons button:last-child:hover {
+  background-color: #da190b;
+}
