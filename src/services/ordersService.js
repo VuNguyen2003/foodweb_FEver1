@@ -1,58 +1,91 @@
 // src/services/ordersService.js
-const API_URL = 'http://localhost:8081/api/v1/orders';
-const ORDER_DETAILS_URL = 'http://localhost:8081/api/v1/order-details';
 
-const createOrder = async (order) => {
+const API_URL = 'http://localhost:8081/api/v1/orders';
+
+/**
+ * Encodes credentials for Basic Authentication.
+ * @param {string} username 
+ * @param {string} password 
+ * @returns {string} Base64 encoded credentials.
+ */
+const encodeCredentials = (username, password) => {
+  return btoa(`${username}:${password}`);
+};
+
+/**
+ * Creates a new order along with its details.
+ * @param {Object} order - The order data.
+ * @param {string} username - User's username.
+ * @param {string} password - User's password.
+ * @returns {Promise<Object>} - The created order response.
+ */
+const createOrder = async (order, username, password) => {
+  const credentials = encodeCredentials(username, password);
+
   const response = await fetch(`${API_URL}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Basic ${credentials}`,
+    },
     body: JSON.stringify(order),
   });
-  if (!response.ok) {
-    throw new Error('Không thể tạo đơn hàng');
-  }
-  const data = await response.json();
-  return data;
-};
 
-const createOrderDetails = async (orderDetails) => {
-  const promises = orderDetails.map(detail =>
-    fetch(`${ORDER_DETAILS_URL}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(detail),
-    }).then(response => {
-      if (!response.ok) {
-        throw new Error('Không thể tạo chi tiết đơn hàng');
+  if (!response.ok) {
+    let errorMessage = 'Không thể tạo đơn hàng';
+    try {
+      const errorData = await response.json();
+      if (errorData.message) {
+        errorMessage = errorData.message;
       }
-      return response.json();
-    })
-  );
-
-  return Promise.all(promises);
-};
-
-// Nếu bạn đã tạo endpoint mới để gửi toàn bộ đơn hàng cùng chi tiết, hãy thêm phương thức tương ứng
-/*
-const createOrderWithDetails = async (orderWithDetails) => {
-  const response = await fetch(`${API_URL}/create-with-details`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(orderWithDetails),
-  });
-  if (!response.ok) {
-    throw new Error('Không thể tạo đơn hàng cùng chi tiết');
+    } catch (e) {
+      // Retain default error message if parsing fails
+    }
+    throw new Error(errorMessage);
   }
+
   const data = await response.json();
   return data;
 };
-*/
 
+/**
+ * Retrieves order history for a user.
+ * @param {string} username 
+ * @param {string} password 
+ * @returns {Promise<Array>} - List of orders.
+ */
+const getOrderHistory = async (username, password) => {
+  const credentials = encodeCredentials(username, password);
+
+  const response = await fetch(`${API_URL}/history`, {
+    method: 'GET',
+    headers: { 
+      'Content-Type': 'application/json',
+      'Authorization': `Basic ${credentials}`,
+    },
+  });
+
+  if (!response.ok) {
+    let errorMessage = 'Không thể tải lịch sử đơn hàng';
+    try {
+      const errorData = await response.json();
+      if (errorData.message) {
+        errorMessage = errorData.message;
+      }
+    } catch (e) {
+      // Retain default error message if parsing fails
+    }
+    throw new Error(errorMessage);
+  }
+
+  const data = await response.json();
+  return data;
+};
+
+// Exporting the service functions
 const ordersService = {
   createOrder,
-  createOrderDetails,
-  // createOrderWithDetails, // Nếu bạn sử dụng phương thức này
-  // Các hàm khác nếu cần
+  getOrderHistory,
 };
 
 export default ordersService;

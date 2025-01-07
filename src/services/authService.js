@@ -49,11 +49,11 @@ const login = async (user) => {
 };
 
 /**
- * Đăng xuất: Xoá user khỏi localStorage, điều hướng về trang chủ.
+ * Đăng xuất: Xoá user khỏi localStorage.
  */
 const logout = () => {
   localStorage.removeItem('user');
-  window.location.href = '/'; // Redirect về home page sau khi logout
+  // Không thực hiện chuyển hướng ở đây
 };
 
 /**

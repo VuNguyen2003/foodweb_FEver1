@@ -11,6 +11,7 @@ import Cart from './components/Cart';
 import './styles/App.css';
 import CategoryManagement from './components/CategoryManagement';
 import ProductManage from './components/ProductManage';
+import OrderHistory from './components/OrderHistory';
 
 const App = () => {
   // Quản lý giỏ hàng tại App.js
@@ -86,6 +87,7 @@ const App = () => {
             updateQuantity={updateQuantity} 
           />} 
         />
+        <Route path="/order-history" element={<OrderHistory />} />
       </Routes>
     </Router>
   );

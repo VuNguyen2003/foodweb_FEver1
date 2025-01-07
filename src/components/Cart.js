@@ -1,12 +1,20 @@
 // src/components/Cart.js
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate for navigation
 import '../styles/Cart.css';
+import ordersService from '../services/ordersService'; // Import the updated service
 
 const Cart = ({ cartItems, removeFromCart, clearCart, updateQuantity }) => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [showPaymentMethod, setShowPaymentMethod] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("");
+  
+  const navigate = useNavigate(); // Initialize navigate
+
+  // TODO: Replace these with actual user credentials from your auth context or state
+  const username = 'user1'; // Example username
+  const password = 'password1'; // Example password
 
   const handleCheckout = () => {
     if (cartItems.length === 0) {
@@ -21,29 +29,43 @@ const Cart = ({ cartItems, removeFromCart, clearCart, updateQuantity }) => {
     setPaymentMethod(e.target.value);
   };
 
-  const handleConfirmPayment = () => {
+  const handleConfirmPayment = async () => {
     if (!paymentMethod) {
       setError("Vui lòng chọn phương thức thanh toán.");
       return;
     }
 
-    // Tạo hóa đơn (invoice)
-    const invoice = {
-      orderId: Date.now(),
-      items: cartItems,
-      total: cartItems.reduce((acc, item) => acc + item.total, 0),
-      date: new Date().toLocaleString(),
-      paymentMethod: paymentMethod,
-    };
+    if (cartItems.length === 0) {
+      setError("Giỏ hàng trống!");
+      return;
+    }
 
-    // Hiển thị hóa đơn đơn giản dưới dạng JSON
-    alert(`Hóa Đơn:\n${JSON.stringify(invoice, null, 2)}`);
+    try {
+      // Prepare order data as per backend expectations
+      const orderData = {
+        paymentMethod: paymentMethod,
+        items: cartItems.map(item => ({
+          productId: item.productId,
+          quantity: item.quantity,
+        })),
+      };
 
-    // Xóa giỏ hàng sau khi thanh toán thành công
-    clearCart();
-    setMessage("Thanh toán thành công! Hóa đơn đã được tạo.");
-    setShowPaymentMethod(false);
-    setPaymentMethod("");
+      // Call the createOrder service function
+      const orderResponse = await ordersService.createOrder(orderData, username, password);
+
+      // Display success message
+      setMessage("Thanh toán thành công! Hóa đơn đã được tạo.");
+      setShowPaymentMethod(false);
+      setPaymentMethod("");
+      clearCart();
+
+      // Optionally, navigate to the order history page
+      navigate('/order-history');
+
+      console.log('Order created successfully:', orderResponse);
+    } catch (err) {
+      setError(err.message);
+    }
   };
 
   const handleCancelPayment = () => {

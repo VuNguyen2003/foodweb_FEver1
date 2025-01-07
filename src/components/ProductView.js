@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import productService from '../services/productService';
+import authService from '../services/authService'; // Import authService
 import '../styles/ProductView.css';
 
 const ProductView = ({ addToCart }) => {
@@ -10,6 +11,9 @@ const ProductView = ({ addToCart }) => {
   const [loading, setLoading] = useState(true);  
   const [error, setError] = useState(null);
   const [message, setMessage] = useState("");
+
+  const currentUser = authService.getCurrentUser(); // Lấy thông tin người dùng hiện tại
+  const userIsAdmin = authService.isAdmin(); // Kiểm tra xem người dùng có phải là admin không
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -43,7 +47,12 @@ const ProductView = ({ addToCart }) => {
         <h1>{product.productName}</h1>
         <p>{product.productDescription}</p>
         <p>Giá: {product.price} VND</p>
-        <button onClick={handleAddToCart}>Thêm vào giỏ hàng</button>
+        
+        {/* Điều kiện hiển thị nút "Thêm vào giỏ hàng" */}
+        {currentUser && !userIsAdmin && (
+          <button onClick={handleAddToCart}>Thêm vào giỏ hàng</button>
+        )}
+        
         {message && <p className="success-message">{message}</p>}
       </div>
     </div>

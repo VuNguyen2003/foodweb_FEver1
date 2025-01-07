@@ -1,11 +1,19 @@
+// src/components/Navbar.js
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom'; // Import useNavigate
 import authService from '../services/authService';
 import '../styles/Navbar.css';
 
 const Navbar = () => {
   const currentUser = authService.getCurrentUser();
   const userIsAdmin = authService.isAdmin();  // Sử dụng hàm isAdmin() đã định nghĩa
+  const navigate = useNavigate(); // Khởi tạo navigate
+
+  // Hàm xử lý Logout
+  const handleLogout = () => {
+    authService.logout();      // Thực hiện Logout (xóa token, session, v.v.)
+    navigate('/login');        // Chuyển hướng đến trang Login
+  };
 
   return (
     <nav className="navbar">
@@ -25,12 +33,7 @@ const Navbar = () => {
           <>
             <li><Link to="/profile">Profile</Link></li>
             <li>
-              <button
-                onClick={() => {
-                  authService.logout();
-                  window.location.reload();
-                }}
-              >
+              <button onClick={handleLogout}>
                 Logout
               </button>
             </li>
